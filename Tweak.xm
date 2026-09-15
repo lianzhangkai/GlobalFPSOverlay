@@ -196,7 +196,14 @@
 static BOOL GTShouldLoadInCurrentProcess(void) {
     @autoreleasepool {
         NSString *bundlePath = [[NSBundle mainBundle] bundlePath] ?: @"";
+        NSString *bundleID = [[NSBundle mainBundle] bundleIdentifier] ?: @"";
         NSString *process = [[NSProcessInfo processInfo] processName] ?: @"";
+
+        // SpringBoard owns a system-level window. If we create our high-level FPS window there,
+        // it can remain visible above foreground apps and duplicate the app-local overlay.
+        // For accurate per-app FPS, do not inject an overlay into SpringBoard.
+        if ([bundleID isEqualToString:@"com.apple.springboard"] ||
+            [process isEqualToString:@"SpringBoard"]) return NO;
 
         // App extensions and WebKit helper/daemon processes do not need their own overlay.
         if ([bundlePath hasSuffix:@".appex"]) return NO;

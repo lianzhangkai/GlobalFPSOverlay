@@ -1,4 +1,4 @@
-# GlobalFPSOverlay 0.1.0
+# GlobalFPSOverlay 0.1.1
 
 适用于越狱 iOS/iPadOS 13.x 的轻量全局 FPS 浮窗测试版。
 
@@ -57,13 +57,20 @@ make clean package FINALPACKAGE=1 messages=yes
 生成：
 
 ```text
-packages/com.chatgpt.globalfpsoverlay_0.1.0_iphoneos-arm.deb
+packages/com.chatgpt.globalfpsoverlay_0.1.1_iphoneos-arm.deb
 ```
 
 ## 安装
 
 ```bash
-dpkg -i com.chatgpt.globalfpsoverlay_0.1.0_iphoneos-arm.deb
+dpkg -i com.chatgpt.globalfpsoverlay_0.1.1_iphoneos-arm.deb
 ```
 
 然后 Respring。卸载包即可完全关闭浮窗。
+
+
+## 0.1.1 修复
+
+- 不再在 SpringBoard 创建高层级 FPS 窗口，避免进入 App 后同时出现 SpringBoard 与 App 两个 FPS 框。
+- 仍然在普通 UIKit App 内显示其本进程 CADisplayLink FPS。
+- 因此主屏幕桌面暂时不显示 FPS；这是为了保证前台 App 只有一个且测量对象准确。

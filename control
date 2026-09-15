@@ -1,6 +1,6 @@
 Package: com.chatgpt.globalfpsoverlay
 Name: GlobalFPSOverlay
-Version: 0.1.0
+Version: 0.1.1
 Architecture: iphoneos-arm
 Description: Lightweight global CADisplayLink FPS overlay for jailbroken iOS 13 devices. Shows per-process display-link cadence and the screen maximum frame rate in UIKit apps and SpringBoard.
 Maintainer: ChatGPT + user test build
