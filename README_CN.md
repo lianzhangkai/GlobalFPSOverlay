@@ -1,76 +1,61 @@
-# GlobalFPSOverlay 0.1.1
+# GlobalFPSOverlay 0.2.0 — FPS + Wi‑Fi 网速状态栏版
 
-适用于越狱 iOS/iPadOS 13.x 的轻量全局 FPS 浮窗测试版。
+适配当前测试环境：
 
-## 它显示什么
+- iPad Pro 2018 / A12X（arm64e）
+- iPadOS 13.7
+- Odyssey / libhooker / MobileSubstrate 兼容注入
+- iOS 13.7 SDK + clang10 old-arm64e 工具链
 
-右上角显示：
+## 0.2.0 改动
 
-```text
-FPS 119.8 | MAX 120
-```
+1. 在 FPS 后新增实时 Wi‑Fi 吞吐显示：
 
-- `FPS`：当前前台 UIKit 进程里 `CADisplayLink` 的实际回调频率，0.5 秒采样并做轻度平滑。
-- `MAX`：`UIScreen.maximumFramesPerSecond`，例如 iPad Pro 2018 应显示 120。
+   `FPS 118/120   WiFi ↓12.4M ↑1.1M`
 
-## 很重要的限制
+   - `↓`：当前 Wi‑Fi 接收速率（下载）
+   - `↑`：当前 Wi‑Fi 发送速率（上传）
+   - `M/K/B`：MiB/s、KiB/s、B/s 的紧凑显示
+   - 每约 0.5 秒采样一次，并做轻微平滑
 
-这不是 GPU/RenderServer 的“最终 present 帧率”。它测的是当前 App 主进程的 DisplayLink / 主 RunLoop 显示节奏。
+2. 显示条移动到最顶部的状态栏区域。
 
-因此：
+3. 横向位置以屏幕宽度的 **80%（4/5 分界点）** 为中心锚点；横竖屏都会重新定位。
 
-- 如果显示 `FPS ~60 | MAX 120`，基本可以判断当前 App/当前运行状态没有跑满 120Hz。
-- 如果显示 `FPS ~120 | MAX 120`，只能说明 App 主进程的显示回调能到 120Hz；某个具体内容（例如 B 站弹幕、视频画面）仍然可能只按 60fps 或 30fps 更新。
-- 这个 Probe 自己创建了一个非常轻量的 CADisplayLink，所以它会对显示系统产生极小扰动。它适合判断 30/60/120 档位，不适合作为精密 GPU profiler。
+4. 不拦截触摸；不强制 60/120Hz；FPS 仍然只是当前前台 UIKit App 主进程的 CADisplayLink 回调频率。
 
-## 注入范围
+5. 继续排除 SpringBoard，避免再次出现两个重复框。
 
-`GlobalFPSOverlay.plist` 使用 `com.apple.UIKit` 过滤，因此会进入 UIKit App 和 SpringBoard；代码内部会跳过 `.appex`、WebContent/Networking/GPU 等辅助进程。
+## 关于 Wi‑Fi 网速
 
-## iPad Pro 2018 建议测试
+本版读取 iOS 的 Wi‑Fi 接口 `en0` 的累计收发字节，并计算两次采样之间的速率。
 
-先确认：
+因此显示的是 **整台设备当前 Wi‑Fi 接口的总吞吐**，不是“当前 App 自己”的网络速度。若有后台下载、系统同步等，它们也会计入。
 
-`设置 → 辅助功能 → 动态效果 → 限制帧速率` 为关闭。
+若当前没有可用的 `en0` Wi‑Fi 接口，会显示：
 
-然后观察：
-
-1. SpringBoard 快速翻页。
-2. 设置 App 快速滚动。
-3. B 站首页滚动。
-4. B 站视频播放页 + 弹幕。
-5. Safari 滚动网页。
-6. APlayer。
-
-如果系统界面接近 120，而 B 站稳定在 60，就很有价值；如果 B 站显示 120 但弹幕仍有明显拖影，则下一步应单独研究弹幕动画更新频率，而不是屏幕刷新率。
+`WiFi ↓-- ↑--`
 
 ## 编译
 
-本工程已经包含 GitHub Actions，继续使用之前 iOS 13.7 + clang 10 old-arm64e 环境即可。
-
-本地 Theos：
+继续使用仓库自带 GitHub Actions，或：
 
 ```bash
 make clean package FINALPACKAGE=1 messages=yes
 ```
 
-生成：
+输出应为：
 
-```text
-packages/com.chatgpt.globalfpsoverlay_0.1.1_iphoneos-arm.deb
-```
+`com.chatgpt.globalfpsoverlay_0.2.0_iphoneos-arm.deb`
 
 ## 安装
 
 ```bash
-dpkg -i com.chatgpt.globalfpsoverlay_0.1.1_iphoneos-arm.deb
+dpkg -i /var/mobile/Media/Downloads/com.chatgpt.globalfpsoverlay_0.2.0_iphoneos-arm.deb
 ```
 
-然后 Respring。卸载包即可完全关闭浮窗。
+然后 Respring，并彻底重开正在测试的 App。
 
+## 备注
 
-## 0.1.1 修复
-
-- 不再在 SpringBoard 创建高层级 FPS 窗口，避免进入 App 后同时出现 SpringBoard 与 App 两个 FPS 框。
-- 仍然在普通 UIKit App 内显示其本进程 CADisplayLink FPS。
-- 因此主屏幕桌面暂时不显示 FPS；这是为了保证前台 App 只有一个且测量对象准确。
+状态栏隐藏的全屏 App 中，iOS 可能返回高度为 0 的 status bar frame。本版仍把监视器固定在物理屏幕最上沿 20pt 区域，避免自动下移到普通 App 内容区域。
