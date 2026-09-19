@@ -158,10 +158,10 @@ static NSString *GTFormatRate(double bytesPerSecond) {
     window.rootViewController = root;
 
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectZero];
-    label.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.42];
+    label.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.18];
     label.textColor = [UIColor whiteColor];
     label.textAlignment = NSTextAlignmentCenter;
-    label.layer.cornerRadius = 4.0;
+    label.layer.cornerRadius = 5.0;
     label.layer.masksToBounds = YES;
     label.userInteractionEnabled = NO;
     label.adjustsFontSizeToFitWidth = YES;
@@ -171,7 +171,7 @@ static NSString *GTFormatRate(double bytesPerSecond) {
     } else {
         label.font = [UIFont boldSystemFontOfSize:10.5];
     }
-    label.text = @"FPS --/--   WiFi ↓-- ↑--";
+    label.text = @"--/--  ↓-- ↑--";
     [root.view addSubview:label];
 
     self.overlayWindow = window;
@@ -194,7 +194,7 @@ static NSString *GTFormatRate(double bytesPerSecond) {
     // status bar. The label is centered on the 4/5 vertical division requested
     // by the user (x = 80% of the display width).
     CGSize wanted = [self.label sizeThatFits:CGSizeMake(CGFLOAT_MAX, labelHeight)];
-    CGFloat labelWidth = MIN(MAX(205.0, ceil(wanted.width + 12.0)), 285.0);
+    CGFloat labelWidth = MIN(MAX(1.0, ceil(wanted.width + 10.0)), 245.0);
 
     CGFloat centerX = CGRectGetWidth(bounds) * 0.80;
     CGFloat centerY = CGRectGetMinY(statusFrame) + statusHeight * 0.50;
@@ -302,7 +302,7 @@ static NSString *GTFormatRate(double bytesPerSecond) {
     NSString *up = @"--";
     [self sampleWiFiAtTimestamp:link.timestamp downString:&down upString:&up];
 
-    self.label.text = [NSString stringWithFormat:@"FPS %.0f/%ld   WiFi ↓%@ ↑%@",
+    self.label.text = [NSString stringWithFormat:@"%.0f/%ld  ↓%@ ↑%@",
                        self.smoothedFPS, (long)maxFPS, down, up];
     [self updateOverlayFrame];
 

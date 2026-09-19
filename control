@@ -1,8 +1,8 @@
 Package: com.chatgpt.globalfpsoverlay
 Name: GlobalFPSOverlay
-Version: 0.2.0
+Version: 0.2.1
 Architecture: iphoneos-arm
-Description: iOS 13 global per-app FPS + real-time Wi-Fi throughput monitor, displayed in the status-bar area near the 4/5 screen-width position.
+Description: Compact iOS 13 global per-app FPS + Wi-Fi throughput overlay with text-sized translucent background near the 4/5 status-bar position.
 Maintainer: ChatGPT + user test build
 Author: ChatGPT + user test build
 Section: Tweaks
